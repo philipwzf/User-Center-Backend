@@ -1,11 +1,11 @@
 package com.yupi.usercenter.service.impl;
-import java.util.Date;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yupi.usercenter.common.ErrorCode;
 import com.yupi.usercenter.exception.BusinessException;
 import com.yupi.usercenter.model.domain.User;
+import com.yupi.usercenter.model.domain.request.UserUpdateRequest;
 import com.yupi.usercenter.service.UserService;
 import com.yupi.usercenter.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -124,6 +124,34 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
 
         return cleanUser;
+    }
+
+    @Override
+    public long userUpdate(UserUpdateRequest userUpdateRequest) {
+        long id = userUpdateRequest.getId();
+        //查询用户是否存在
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",id);
+        User user = userMapper.selectOne(queryWrapper);
+        if(user==null){
+            log.info("account does not exist");
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"Account Does Not Exist");
+        }
+
+        //update the user info with the new info
+        user.setUserAccount(userUpdateRequest.getUserAccount());
+        user.setUsername(userUpdateRequest.getUsername());
+        user.setEmail(userUpdateRequest.getEmail());
+        user.setGender(userUpdateRequest.getGender());
+        user.setUserRole(userUpdateRequest.getUserRole());
+        user.setPhone(userUpdateRequest.getPhone());
+        user.setAvatarUrl(userUpdateRequest.getAvatarUrl());
+
+        boolean saveResult = this.updateById(user);
+        if(!saveResult){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        return user.getId();
     }
 
     /**

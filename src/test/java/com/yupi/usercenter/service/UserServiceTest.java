@@ -2,6 +2,7 @@ package com.yupi.usercenter.service;
 import java.util.Date;
 
 import com.yupi.usercenter.model.domain.User;
+import com.yupi.usercenter.model.domain.request.UserUpdateRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,7 +18,7 @@ class UserServiceTest {
     @Resource
     private UserService userService;
     @Test
-    public void testAddUser(){
+    void testAddUser(){
         User user = new User();
         user.setUsername("test123");
         user.setUserAccount("123");
@@ -68,5 +69,24 @@ class UserServiceTest {
 
 
 
+
+    }
+
+    @Test
+    void userUpdate() {
+        long id = 1;
+        String userAccount;
+        String username;
+        int gender = 1;
+        String phone = "";
+        String email = "asd@gmail.com";
+        int userRole = 1;
+        String avatarUrl = "";
+
+        userAccount = "update123";
+        username = "updated";
+        UserUpdateRequest test = new UserUpdateRequest(id,userAccount,username,avatarUrl,gender,phone,email,userRole);
+        long result = userService.userUpdate(test);
+        Assertions.assertEquals(1,result);
     }
 }

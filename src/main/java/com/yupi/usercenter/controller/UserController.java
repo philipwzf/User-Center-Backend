@@ -1,7 +1,6 @@
 package com.yupi.usercenter.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.yupi.usercenter.common.BaseResponse;
 import com.yupi.usercenter.common.ErrorCode;
 import com.yupi.usercenter.common.ResultUtils;
@@ -9,13 +8,13 @@ import com.yupi.usercenter.exception.BusinessException;
 import com.yupi.usercenter.model.domain.User;
 import com.yupi.usercenter.model.domain.request.UserLoginRequest;
 import com.yupi.usercenter.model.domain.request.UserRegisterRequest;
+import com.yupi.usercenter.model.domain.request.UserUpdateRequest;
 import com.yupi.usercenter.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,6 +62,17 @@ public class UserController {
         User user =  userService.userLogin(userAccount,userPassword,request);
         return ResultUtils.success(user);
     }
+
+    @PostMapping("/update")
+    public BaseResponse<Long> userUpdate(@RequestBody UserUpdateRequest userUpdateRequest){
+        if (userUpdateRequest == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+
+        long id = userService.userUpdate(userUpdateRequest);
+        return ResultUtils.success(id);
+        //todo: find a way to fix he update time in SQL
+    }
     @PostMapping("/logout")
     public BaseResponse<Integer> userLogout(HttpServletRequest request){
         if (request == null){
@@ -78,7 +88,6 @@ public class UserController {
         User currentUser = (User) userObj;
         if(currentUser == null){
             return null;
-            //throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
         long userId = currentUser.getId();
         User user = userService.getById(userId);
